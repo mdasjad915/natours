@@ -8827,8 +8827,8 @@ var login = /*#__PURE__*/function () {
             return (0, _axios.default)({
               method: 'POST',
               withCredentials: true,
-              // url: 'http://localhost:3000/api/v1/users/login',
-              url: 'http://127.0.0.1:3000/api/v1/users/login',
+              url: 'http://localhost:3000/api/v1/users/login',
+              // url: 'http://127.0.0.1:3000/api/v1/users/login',
               data: {
                 email: email,
                 password: password
