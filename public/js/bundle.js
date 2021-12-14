@@ -8881,7 +8881,8 @@ var logout = /*#__PURE__*/function () {
             return (0, _axios.default)({
               method: 'GET',
               withCredentials: true,
-              url: 'http://127.0.0.1:3000/api/v1/users/logout'
+              url: 'http://localhost:3000/api/v1/users/logout' // url: 'http://127.0.0.1:3000/api/v1/users/logout'
+
             });
 
           case 3:
@@ -8893,7 +8894,7 @@ var logout = /*#__PURE__*/function () {
           case 7:
             _context2.prev = 7;
             _context2.t0 = _context2["catch"](0);
-            (0, _alerts.showAlert)('error', 'Error while loggong out, Try again!');
+            (0, _alerts.showAlert)('error', 'Error while logging out, Try again!');
 
           case 10:
           case "end":
