@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     default: 'user'
   },
   password: {
-    type: String, 
+    type: String,
     required: [true, 'provide password'],
     minlength: 8,
     select: false
@@ -39,6 +39,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'provide password'],
     validate: {
+      //This will only work for SAVE and CREATE.
+      //Whenever we need to update or forgot password, we need to do that by SAVE instead of findOneandUpdate() etc bcz
+      //then this validator will not run
       validator: function(ele) {
         return ele === this.password;
       },
@@ -55,8 +58,11 @@ const userSchema = new mongoose.Schema({
   }
 });
 
+
+//It runs between we get the data and save the data into the database, that's why we are using it
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+  //Only run the function if password was actually modified or for the first time
+  if (!this.isModified('password')) return next();    //If we had called only next(), then the code below would have also run. So we need to return it.
 
   this.password = await bcrypt.hash(this.password, 12);
 
