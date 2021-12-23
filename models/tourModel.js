@@ -80,6 +80,7 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    //https://docs.mongodb.com/manual/geospatial-queries/
     startLocation: {
       //GeoJSON
       type: {
@@ -87,7 +88,7 @@ const tourSchema = new mongoose.Schema(
         default: 'Point',
         enum: ['Point']
       },
-      coordinates: [Number],
+      coordinates: [Number],      //[longititude, latitude] works like this in GeoJSON
       address: String,
       description: String
     },
@@ -112,9 +113,11 @@ const tourSchema = new mongoose.Schema(
     ]
   },
   {
+    //defined here to show virtual properties in the outputted data, because it does not get persisted into the database
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
   }
+  //we cannot use VIRTUAL PROPERTIES in an query because they are not part of the database
 );
 
 // tourSchema.index({ price: 1 });
@@ -126,6 +129,7 @@ tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
 
+//doing VIRTUAL POPULATE here
 tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',
@@ -138,7 +142,7 @@ tourSchema.pre('save', function(next) {
   next();
 });
 
-//emebedded performing code
+//emebedded performing code- guides 
 // tourSchema.pre('save', async function(next){
 //   const guidesPromises= this.guides.map(async id => await User.findById(id));
 //   this.guides= await Promise.all(guidesPromises);
@@ -150,9 +154,12 @@ tourSchema.pre('save', function(next) {
 //     next();
 // })
 
-//QUERY MIDDLEWARE
+//QUERY MIDDLEWARE- populates always happens in a QUERY
+//using too much populate in a project slows down the application...because behind the scene populate creates a new query
 tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
+
+  this.start = Date.now();
   next();
 });
 
@@ -173,7 +180,7 @@ tourSchema.post(/^find/, function(docs, next) {
 //AGGREGATION MIDDLEWARE
 // tourSchema.pre('aggregate', function(next) {
 //   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-//   console.log(this.pipeline());
+//   console.log(this.pipeline());         //returns the aggregation methods that we specified in the concerned function(controller)
 //   next();
 // });
 

@@ -29,6 +29,7 @@ const reviewSchema = new mongoose.Schema(
       required: [true, 'Review must be done by a user']
     }
   },
+  //defining virtual properties here as we will get reviews on tours through this VIRTUAL PROPERTY
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
@@ -53,6 +54,7 @@ reviewSchema.pre(/^find/, function(next) {
   next();
 });
 
+//used STATIC method bcz we needed to call aggregate function on this model
 reviewSchema.statics.calcAverageRatings = async function(tourId) {
   const stats = await this.aggregate([
     {
@@ -82,6 +84,7 @@ reviewSchema.statics.calcAverageRatings = async function(tourId) {
 };
 
 reviewSchema.post('save', function() {
+  //this points to the current review
   this.constructor.calcAverageRatings(this.tour);
 });
 
